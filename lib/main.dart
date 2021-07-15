@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:namma_badavane/utils/bottom_navigation.dart';
 import './screens/LoginScreen.dart';
 import './utils/colors.dart';
 import 'screens/Home.dart';
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: primary_color,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomeScreen(),
+      home: BottomBarExample(),
 
     );
   }

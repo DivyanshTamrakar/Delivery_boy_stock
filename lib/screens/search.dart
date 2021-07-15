@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 
+
 class DataSearch extends SearchDelegate<String> {
+
+
+
   final cities = [
     "jabalpur",
     "Bhopal",
@@ -62,8 +66,7 @@ class DataSearch extends SearchDelegate<String> {
           onTap: (){
             showResults(context);
           },
-
-            leading: Icon(Icons.location_city),
+          leading: Icon(Icons.location_city),
             title: RichText(
               text: TextSpan(
                 text: suggestion[index].substring(0,query.length),

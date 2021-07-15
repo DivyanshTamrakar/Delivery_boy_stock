@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:namma_badavane/screens/Home.dart';
+import 'package:namma_badavane/screens/Profile.dart';
 
 class BottomBarExample extends StatefulWidget {
   @override
@@ -28,42 +30,31 @@ class _BottomBarExampleState extends State<BottomBarExample> {
         clipBehavior: Clip.antiAlias,
         notchMargin: 4,
         child: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          unselectedItemColor: Colors.white,
-          selectedItemColor: Colors.yellowAccent,
-          backgroundColor: Colors.blue,
-          currentIndex: _page,
-          onTap: (index) {
-            this._controller.animateToPage(index,
-                duration: const Duration(milliseconds: 10),
-                curve: Curves.easeInOut);
-          },
-          items:<BottomNavigationBarItem>[
-                  new BottomNavigationBarItem(
-                      icon: new Icon(
-                        Icons.home,
-                        color: Colors.white,
-                      ),
-                      label: "Home"),
-                  new BottomNavigationBarItem(
-                      icon: new Icon(
-                        Icons.history,
-                        color: Colors.white,
-                      ),
-                      label: "History"),
-                  new BottomNavigationBarItem(
-                      icon: new Icon(
-                        Icons.lightbulb,
-                        color: Colors.white,
-                      ),
-                      label: "Solutions"),
-                  new BottomNavigationBarItem(
-                      icon: new Icon(
-                        Icons.person,
-                        color: Colors.white,
-                      ),
-                      label: "Profile"),
-                ]
+            type: BottomNavigationBarType.fixed,
+            unselectedItemColor: Colors.white,
+            selectedItemColor: Colors.amber,
+            backgroundColor: Color.fromRGBO(67, 88, 185, 1.0),
+            currentIndex: _page,
+            onTap: (index) {
+              this._controller.animateToPage(index,
+                  duration: const Duration(milliseconds: 10),
+                  curve: Curves.easeInOut);
+            },
+            items:<BottomNavigationBarItem>[
+              new BottomNavigationBarItem(
+                  icon: new Icon(
+                    Icons.home,
+                    color: Colors.white,
+                  ),
+                  label: "Home"),
+
+              new BottomNavigationBarItem(
+                  icon: new Icon(
+                    Icons.person,
+                    color: Colors.white,
+                  ),
+                  label: "Profile"),
+            ]
         ),
       ),
       body: new PageView(
@@ -74,6 +65,8 @@ class _BottomBarExampleState extends State<BottomBarExample> {
           });
         },
         children: <Widget>[
+          HomeScreen(),
+          ProfileScreen(),
         ],
       ),
     );

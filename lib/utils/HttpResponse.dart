@@ -15,7 +15,7 @@ class HttpResponse{
     print('Url==$url');
     return http.post(url,body: body,headers: {"Content-Type": "application/json"}).then((http.Response response){
       if(response.statusCode<200 || response.statusCode>400 || json==null){
-        print('HttpResponse=='+response.body.toString());
+        print('HttpResponse==' + response.body.toString());
         throw new Exception("Error while fetching============================");
       }
       return response.body.toString();
@@ -27,11 +27,7 @@ class HttpResponse{
 
     String url=BASE_URL+service;
     print('Url==$url');
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String accessToken = prefs.getString("token");
-    print("Divyansh");
-    print(accessToken);
-    http.Response response= await http.get(url,headers: {"Authorization": accessToken});
+    http.Response response= await http.get(url);
     if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
       print("Error occur===============================");
       print('HttpResponse=='+response.body.toString());

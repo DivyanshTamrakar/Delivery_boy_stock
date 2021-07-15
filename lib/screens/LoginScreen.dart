@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import '../screens/Login_otp_Screen.dart';
 import '../utils/HttpResponse.dart';
 import '../utils/colors.dart';
 import '../widgets/dialogs.dart';
@@ -15,6 +13,7 @@ class LoginScreen extends StatefulWidget {
 
 class _ScreenState extends State<LoginScreen> {
   TextEditingController _controller = new TextEditingController();
+  TextEditingController _passcontroller = new TextEditingController();
 
   // check() async {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -80,14 +79,14 @@ class _ScreenState extends State<LoginScreen> {
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Text("Delivery",
+                          Text("Agent",
                               style: TextStyle(
                                   fontSize: 45, color: Colors.orange,fontWeight: FontWeight.bold)
                           ),
                           SizedBox(
                             width: MediaQuery.of(context).size.width/30 ,
                           ),
-                          Text("Agent",
+                          Text("Login",
                               style: TextStyle(
                                   fontSize: 45,
                                   color: Colors.orange,
@@ -116,7 +115,7 @@ class _ScreenState extends State<LoginScreen> {
                   Container(
                     width: width,
                     child: Text(
-                      "To continue,enter your phone Number",
+                      "To continue,Enter your credentials",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontSize: 16,
@@ -137,7 +136,34 @@ class _ScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(30),
                       child: TextField(
                         controller: _controller,
-                        keyboardType: TextInputType.phone,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: new InputDecoration(
+                            counterText: "",
+                            border: new OutlineInputBorder(
+                              borderRadius: const BorderRadius.all(
+                                const Radius.circular(30.0),
+                              ),
+                            ),
+                            filled: true,
+                            contentPadding: EdgeInsets.zero,
+                            hintStyle: new TextStyle(color: Colors.grey[800]),
+                            hintText: "Enter Email",
+                            prefixIcon: Icon(Icons.person,
+                                color: Color.fromRGBO(223, 143, 96, 1.0)),
+                            fillColor: primary_text_color),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 20),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 50.0),
+                    child: Material(
+                      elevation: 5,
+                      borderRadius: BorderRadius.circular(30),
+                      child: TextField(
+                        controller: _passcontroller,
+                        keyboardType: TextInputType.visiblePassword,
                         maxLength: 10,
                         decoration: new InputDecoration(
                             counterText: "",
@@ -149,8 +175,8 @@ class _ScreenState extends State<LoginScreen> {
                             filled: true,
                             contentPadding: EdgeInsets.zero,
                             hintStyle: new TextStyle(color: Colors.grey[800]),
-                            hintText: "Enter Phone Number",
-                            prefixIcon: Icon(Icons.call,
+                            hintText: "Enter password",
+                            prefixIcon: Icon(Icons.lock,
                                 color: Color.fromRGBO(223, 143, 96, 1.0)),
                             fillColor: primary_text_color),
                       ),
@@ -195,12 +221,12 @@ class _ScreenState extends State<LoginScreen> {
                               SharedPreferences prefs =
                                   await SharedPreferences.getInstance();
                               prefs.setString('contact', _controller.text);
-                              Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (context) =>
-                                          OTPScreenAfterLogin(
-                                              contact: _controller.text)));
+                              // Navigator.push(
+                              //     context,
+                              //     CupertinoPageRoute(
+                              //         builder: (context) =>
+                              //             OTPScreenAfterLogin(
+                              //                 contact: _controller.text)));
                             }
                           } catch (e) {
                             print("Error : $e");
