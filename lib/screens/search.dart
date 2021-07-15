@@ -1,28 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:namma_badavane/screens/DealerInfo.dart';
 
 
 
 class DataSearch extends SearchDelegate<String> {
-
-
-
-  final cities = [
-    "jabalpur",
-    "Bhopal",
-    "Indore",
-    "Gwalior",
-    "Pendra",
-    "Nagpur",
-    "nainital",
-    "NainPoor"
-  ];
-
-  final recentCities = [
-    "Delhi",
-    "Mumbai",
-    "Himanchal",
-  ];
-
+  final List<dynamic> deal;
+  DataSearch({Key key, @required this.deal});
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -47,7 +31,8 @@ class DataSearch extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    // show some result based on selection
+
+
     return Container(
       height: 100.0,
       width: 100.0,
@@ -59,12 +44,22 @@ class DataSearch extends SearchDelegate<String> {
   @override
   Widget buildSuggestions(BuildContext context)  {
     // show when someone searching for something
-    final suggestion = query.isEmpty ? recentCities : 
-    cities.where((element) => element.startsWith(query)).toList();
+    List<String> names = [];
+    for(int i =0 ; i < deal.length;i++){
+      names.add(deal[i]['supplierName']);
+    }
+    final suggestion = query.isEmpty ? names :
+    names.where((element) => element.startsWith(query)).toList();
     return ListView.builder(itemBuilder: (context, index) =>
         ListTile(
           onTap: (){
-            showResults(context);
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => DealerInfo(
+                      supplierID: deal[index]['supplierID'],
+                    )));
+
           },
           leading: Icon(Icons.location_city),
             title: RichText(

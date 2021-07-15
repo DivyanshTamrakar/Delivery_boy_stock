@@ -41,12 +41,13 @@ class _HomeScreenState extends State<HomeScreen> {
           "All Shopkeepers",
           style: TextStyle(
             color: Colors.white,
+            letterSpacing: 1.5
           ),
         ),
         actions: <Widget>[
           IconButton(
               onPressed: () {
-                showSearch(context: context, delegate: DataSearch());
+                showSearch(context: context, delegate: DataSearch(deal: dealers));
               },
               icon: Icon(Icons.search))
         ],
