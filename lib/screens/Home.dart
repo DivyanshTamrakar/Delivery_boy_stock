@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:namma_badavane/screens/DealerInfo.dart';
 import 'package:namma_badavane/utils/HttpResponse.dart';
 
-import 'search.dart';
-
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -14,6 +12,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<dynamic> dealers;
+  List<dynamic> dealers_display;
 
   fetchData() async {
     var resp = await HttpResponse.getResponse(service: '/suppliers');
@@ -22,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
     print("\n\n${response.toString()}\n\n");
     setState(() {
       dealers = response['data'];
+      dealers_display = dealers;
     });
   }
 
@@ -46,10 +46,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: <Widget>[
           IconButton(
-              onPressed: () {
-                showSearch(context: context, delegate: DataSearch(deal: dealers));
-              },
-              icon: Icon(Icons.search))
+              onPressed: () {     },
+              icon: Icon(Icons.notifications),color: Colors.white,)
         ],
       ),
       body: (dealers != null)
@@ -59,89 +57,129 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Expanded(
                       child: ListView.builder(
-                          itemCount: dealers.length,
+                          itemCount: dealers_display.length + 1,
                           itemBuilder: (context, i) {
-                            return Container(
-                              margin: EdgeInsets.all(5),
-                              child: Card(
-                                elevation: 5,
-                                shape: RoundedRectangleBorder(
-                                    side: new BorderSide(
-                                        color: Colors.grey[300], width: 1.0),
-                                    borderRadius: BorderRadius.circular(4.0)),
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(4.0),
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        CupertinoPageRoute(
-                                            builder: (context) => DealerInfo(
-                                                  supplierID: dealers[i]
-                                                      ['supplierID'],
-                                                )));
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 10,
-                                        right: 10,
-                                        top: 15,
-                                        bottom: 20),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Container(
-                                              width: width * 0.5,
-                                              child: Text(
-                                                dealers[i]['supplierName'],
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 1,
-                                                style: TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ),
-                                            Spacer(),
-                                            Text(
-                                              dealers[i]['supplierID'],
-                                              style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 10.0,
-                                        ),
-                                        Container(
-                                          alignment: Alignment.bottomLeft,
-                                          child: Text(
-                                            'City' +
-                                                " : " +
-                                                '${dealers[i]['City']}',
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
+                            return  i == 0 ? _searchBar():_listItem(i-1);
                           }),
                     ),
                   ],
                 )
               : Center(
-                  child: Text("No complaint History Found",
+                  child: Text("Loading...",
                       textAlign: TextAlign.center),
                 )
           : Center(
-              child: Text("No complaint History Found",
+              child: Text("Loading...",
                   textAlign: TextAlign.center)),
     );
   }
+
+  _searchBar() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextField(
+        decoration: InputDecoration(
+            hintText: 'Search...'
+        ),
+        onChanged: (text) {
+          text = text;
+          setState(() {
+            dealers_display = dealers.where((note) {
+              var noteTitle = note['supplierName'];
+              return noteTitle.contains(text);
+            }).toList();
+          });
+        },
+      ),
+    );
+  }
+
+
+  _listItem(i) {
+    double width = MediaQuery.of(context).size.width;
+    return  Container(
+      margin: EdgeInsets.all(5),
+      child: Card(
+        elevation: 5,
+        shape: RoundedRectangleBorder(
+            side: new BorderSide(
+                color: Colors.grey[300], width: 1.0),
+            borderRadius: BorderRadius.circular(4.0)),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(4.0),
+          onTap: () {
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => DealerInfo(
+                      supplierID: dealers_display[i]
+                      ['supplierID'],
+                    )));
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(
+                left: 10,
+                right: 10,
+                top: 15,
+                bottom: 20),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: width * 0.5,
+                      child: Text(
+                        dealers_display[i]['supplierName'],
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight:
+                            FontWeight.bold),
+                      ),
+                    ),
+                    Spacer(),
+                    Text(
+                      dealers_display[i]['supplierID'],
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                Container(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    'City' +
+                        " : " +
+                        '${dealers_display[i]['City']}',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
 }
+

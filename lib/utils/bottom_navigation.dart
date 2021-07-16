@@ -28,7 +28,7 @@ class _BottomBarExampleState extends State<BottomBarExample> {
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),
         clipBehavior: Clip.antiAlias,
-        notchMargin: 4,
+        notchMargin:2,
         child: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             unselectedItemColor: Colors.white,
