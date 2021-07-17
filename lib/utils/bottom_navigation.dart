@@ -47,7 +47,6 @@ class _BottomBarExampleState extends State<BottomBarExample> {
                     color: Colors.white,
                   ),
                   label: "Home"),
-
               new BottomNavigationBarItem(
                   icon: new Icon(
                     Icons.person,

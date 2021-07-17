@@ -1,9 +1,7 @@
-
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:namma_badavane/config.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 
 

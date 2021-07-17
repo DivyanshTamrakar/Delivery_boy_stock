@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:namma_badavane/screens/LoginScreen.dart';
+import 'package:namma_badavane/utils/HttpResponse.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/colors.dart';
 
 
@@ -12,26 +17,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String name = "", contact = "", profile = "";
 
   getUserData() async {
-    // var resp = await HttpResponse.getResponse(
-    //   service: '/users/profile',
-    // );
-    // print("\n\n$resp\n\n");
-    //
-    // var response = jsonDecode(resp);
-    // print("\n\n${response.toString()}\n\n");
-    //
-    // setState(() {
-    //   name = response['data']['name'].toString();
-    //   contact = response['data']['contact'].toString();
-    //   profile = response['data']['profile'].toString();
-    // });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString('userID');
+    var resp = await HttpResponse.getResponse(
+      service: '/users/$id',
+    );
+    print("\n\n$resp\n\n");
+
+    var response = jsonDecode(resp);
+    print("\n\n${response.toString()}\n\n");
+
+    setState(() {
+      name = response['data'][0]['empname'].toString();
+      contact = response['data'][0]['mobile'].toString();
+      profile = response['data'][0]['photo'].toString();
+    });
   }
 
   @override
   void initState() {
 
     super.initState();
-    // getUserData();
+    getUserData();
   }
 
   @override
@@ -57,7 +64,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(100),
-                        child: profile == "null"
+                        child: profile == "null" || profile == ""
                             ? Image.asset(
                           "assets/profile_placeholder.png",
                           height: 120,
@@ -96,7 +103,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Card(
                 elevation: 5,
                 child: InkWell(
-                  onTap: (){
+                  onTap: () async {
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    prefs.clear();
+                    print("Id Cleared");
+                    print(prefs.getString("userID"));
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                        LoginScreen()), (Route<dynamic> route) => false);
                   },
                   child: ListTile(
                     leading: Icon(Icons.logout, color: Color.fromRGBO(67, 88, 185, 1.0)),

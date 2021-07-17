@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:namma_badavane/utils/bottom_navigation.dart';
 import '../utils/HttpResponse.dart';
 import '../utils/colors.dart';
 import '../widgets/dialogs.dart';
@@ -15,20 +16,20 @@ class _ScreenState extends State<LoginScreen> {
   TextEditingController _controller = new TextEditingController();
   TextEditingController _passcontroller = new TextEditingController();
 
-  // check() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   print("user token ========  ${prefs.getString("token")}");
-  //   var userToken = prefs.getString("token");
-  //   if (userToken != null) {
-  //     Navigator.pushReplacement(context,
-  //         MaterialPageRoute(builder: (BuildContext context) => BottomBarExample()));
-  //   }
-  // }
+  check() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print("user Id ========  ${prefs.getString("userID")}");
+    var userToken = prefs.getString("userID");
+    if (userToken != null) {
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (BuildContext context) => BottomBarExample()));
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    // check();
+    check();
   }
 
   @override
@@ -129,6 +130,8 @@ class _ScreenState extends State<LoginScreen> {
                     endIndent: 50,
                   ),
                   SizedBox(height: 20),
+
+
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 50.0),
                     child: Material(
@@ -154,7 +157,6 @@ class _ScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-
                   SizedBox(height: 20),
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 50.0),
@@ -162,6 +164,7 @@ class _ScreenState extends State<LoginScreen> {
                       elevation: 5,
                       borderRadius: BorderRadius.circular(30),
                       child: TextField(
+                        obscureText: true,
                         controller: _passcontroller,
                         keyboardType: TextInputType.visiblePassword,
                         maxLength: 10,
@@ -189,44 +192,48 @@ class _ScreenState extends State<LoginScreen> {
                     endIndent: width * 0.1,
                   ),
                   SizedBox(height: 10),
+
+
                   Material(
                     color: Colors.transparent,
                     // elevation: 5,
                     borderRadius: BorderRadius.circular(20.0),
                     child: InkWell(
                       onTap: () async {
-                        print(_controller.text);
-                        if (_controller.text.length == 10)
+                        if (_controller.text.toString().isNotEmpty && _passcontroller.text.toString().isNotEmpty)
                           try {
                             Map data = {
-                              "contact": _controller.text.toString()
+                              "email" : _controller.text.toString(),
+                              "password" : _passcontroller.text.toString()
                             };
                             var resp = await HttpResponse.postResponse(
-                                service: '/users/send-otp', data: data);
+                                service: '/users', data: data);
                             print("\n\n$resp\n\n");
                             print(data);
                             var response = jsonDecode(resp);
                             print("\n\n${response.toString()}\n\n");
-                            if (response['status'] == '403') {
+                            if (response['status'] == '200') {
+
+                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                              prefs.setString('userID', "${response['user'][0]['id']}");
+
+                              Navigator.pushReplacement(
+                                  context,
+                                  CupertinoPageRoute(
+                                      builder: (context) =>
+                                          BottomBarExample()));
+
+                            } else {
+
                               showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
                                     return oneButtonDialog(
                                         context: context,
-                                        title: "Contact Not Registered",
-                                        content: response['error'],
+                                        title: "Wrong Credentials",
+                                        content: "Check your enter details",
                                         actionTitle: "OK");
                                   });
-                            } else {
-                              SharedPreferences prefs =
-                                  await SharedPreferences.getInstance();
-                              prefs.setString('contact', _controller.text);
-                              // Navigator.push(
-                              //     context,
-                              //     CupertinoPageRoute(
-                              //         builder: (context) =>
-                              //             OTPScreenAfterLogin(
-                              //                 contact: _controller.text)));
                             }
                           } catch (e) {
                             print("Error : $e");
@@ -246,9 +253,8 @@ class _ScreenState extends State<LoginScreen> {
                               builder: (BuildContext context) {
                                 return oneButtonDialog(
                                     context: context,
-                                    title: "Invalid Number",
-                                    content:
-                                        "Please enter a valid 10 digit mobile number",
+                                    title: "Couldn't login",
+                                    content:"Please fill all the details",
                                     actionTitle: "OK");
                               });
 

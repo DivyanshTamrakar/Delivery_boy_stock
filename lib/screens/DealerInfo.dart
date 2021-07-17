@@ -16,10 +16,19 @@ class DealerInfo extends StatefulWidget {
 }
 
 class _DealerInfoScreenState extends State<DealerInfo> {
+  List<dynamic> invoice;
+  var data  = {};
 
-  List <String> InvoiceList = ["Invoice-1","Invoice-2","Invoice-3","Invoice-4","Invoice-5",];
-  var data = {};
-
+  void fetchInvoices() async {
+    var resp = await HttpResponse.getResponse(
+        service: '/suppliers-purchase/${widget.supplierID}');
+    print("\n\n$resp\n\n");
+    var response = jsonDecode(resp);
+    print("\n\n${response.toString()}\n\n");
+    setState(() {
+      invoice = response['data'];
+    });
+  }
   void fetchDetails() async {
     var resp = await HttpResponse.getResponse(
         service: '/suppliers/${widget.supplierID}');
@@ -29,13 +38,13 @@ class _DealerInfoScreenState extends State<DealerInfo> {
     setState(() {
       data = response['data'];
     });
-    print(data);
-  }
+     }
 
   @override
   void initState() {
     super.initState();
     fetchDetails();
+    fetchInvoices();
   }
 
   @override
@@ -60,7 +69,7 @@ class _DealerInfoScreenState extends State<DealerInfo> {
                     ),
                     child: ClipRRect(
                       child: Image.asset(
-                        "assets/banner.jpg",
+                        "assets/info_banner.jpg",
                         height: 120,
                         width: width,
                         fit: BoxFit.cover,
@@ -193,12 +202,12 @@ class _DealerInfoScreenState extends State<DealerInfo> {
                           )),
                     ),
                   ]),
-                  (InvoiceList.isNotEmpty)
+                  (invoice.isNotEmpty)
                       ? ListView.builder(
                           shrinkWrap: true,
                           physics: new AlwaysScrollableScrollPhysics(),
                           scrollDirection: Axis.vertical,
-                          itemCount: InvoiceList.length,
+                          itemCount: invoice.length,
                           itemBuilder: (context, i) {
                             return Container(
                               margin: EdgeInsets.all(5),
@@ -219,7 +228,8 @@ class _DealerInfoScreenState extends State<DealerInfo> {
                                         CupertinoPageRoute(
                                             builder: (context) =>
                                                 InvoiceDetails(
-                                                  invoiceId: "1",
+                                                  invoiceId: invoice[i]['invoiceNo'],
+                                                  supplierID: invoice[i]['supplierid']
                                                 )));
                                   },
                                   child: Padding(
@@ -234,8 +244,7 @@ class _DealerInfoScreenState extends State<DealerInfo> {
                                           children: [
                                             Container(
                                               width: width * 0.5,
-                                              child: Text(
-                                                InvoiceList[i],
+                                              child: Text("Invoice No : "+ invoice[i]['invoiceNo'],
                                                 overflow: TextOverflow
                                                     .ellipsis,
                                                 maxLines: 1,
