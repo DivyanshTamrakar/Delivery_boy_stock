@@ -5,7 +5,6 @@ import 'package:namma_badavane/model/book.dart';
 import 'package:namma_badavane/screens/DealerInfo.dart';
 import 'package:namma_badavane/search_widgte/search_widget.dart';
 
-
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -50,21 +49,26 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
           backgroundColor: Color.fromRGBO(67, 88, 185, 1.0),
-          title: Text("All Customers",style: TextStyle(color: Colors.white,letterSpacing: 1.0),),
-          centerTitle: false,
+          title: Text(
+            "All Customers",
+            style: TextStyle(color: Colors.white, letterSpacing: 1.0),
+          ),
+         centerTitle: false,
         ),
         body: Column(
           children: <Widget>[
             buildSearch(),
+
             Expanded(
-              child: customer.length > 0 ?
-              ListView.builder(
-                itemCount: customer.length,
-                itemBuilder: (context, index) {
-                  final book = customer[index];
-                  return buildBook(book);
-                },
-              ):Center(child: Text('Loading...')),
+              child: customer.length > 0
+                  ? ListView.builder(
+                      itemCount: customer.length,
+                      itemBuilder: (context, index) {
+                        final book = customer[index];
+                        return buildBook(book);
+                      },
+                    )
+                  : Center(child: Text('Loading...')),
             ),
           ],
         ),
@@ -88,24 +92,28 @@ class _HomeScreenState extends State<HomeScreen> {
       });
 
   Widget buildBook(Customer customer) => GestureDetector(
-    onTap: (){
-      Navigator.push(context, MaterialPageRoute(builder: (context)=> DealerInfo(supplierID: customer.supplierID)));
-    },
-    child: Container(
-      padding: EdgeInsets.only(left: 8.0,right: 8.0),
-      child: Card(
-        elevation: 5,
-        shape: RoundedRectangleBorder(
-            side: new BorderSide(
-                color: Colors.grey[300],
-                width: 1.0),
-            borderRadius:
-            BorderRadius.circular(4.0)),
-        child: ListTile(
-              title: Text(customer.supplierName),
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      DealerInfo(supplierID: customer.supplierID)));
+        },
+        child: Container(
+          padding: EdgeInsets.only(left: 8.0, right: 8.0),
+          child: Card(
+            elevation: 5,
+            shape: RoundedRectangleBorder(
+                side: new BorderSide(color: Colors.grey[300], width: 1.0),
+                borderRadius: BorderRadius.circular(4.0)),
+            child: ListTile(
+              title: Text(
+                customer.supplierName,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               subtitle: Text(customer.City),
             ),
-      ),
-    ),
-  );
+          ),
+        ),
+      );
 }
