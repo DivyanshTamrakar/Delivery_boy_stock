@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:namma_badavane/api/books_api.dart';
-import 'package:namma_badavane/model/book.dart';
+import 'package:namma_badavane/api/AllCutomerApi.dart';
+import 'package:namma_badavane/model/AllCustomerModel.dart';
 import 'package:namma_badavane/screens/CustomerInfo.dart';
 import 'package:namma_badavane/search_widget/search_widget.dart';
 import 'package:namma_badavane/utils/HttpResponse.dart';

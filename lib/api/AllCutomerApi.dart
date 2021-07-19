@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:namma_badavane/model/book.dart';
+import 'package:namma_badavane/model/AllCustomerModel.dart';
 
 class CustomerApi {
   static Future<List<Customer>> getBooks(String query) async {
