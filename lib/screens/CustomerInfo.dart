@@ -6,10 +6,10 @@ import 'package:namma_badavane/utils/HttpResponse.dart';
 import 'InvoiceDetails.dart';
 
 class DealerInfo extends StatefulWidget {
-  final String supplierID;
+  final int customerid;
 
   // receive data from the FirstScreen as a parameter
-  DealerInfo({Key key, @required this.supplierID}) : super(key: key);
+  DealerInfo({Key key, @required this.customerid}) : super(key: key);
 
   @override
   _DealerInfoScreenState createState() => _DealerInfoScreenState();
@@ -21,7 +21,7 @@ class _DealerInfoScreenState extends State<DealerInfo> {
 
   void fetchInvoices() async {
     var resp = await HttpResponse.getResponse(
-        service: '/suppliers-purchase/${widget.supplierID}');
+        service: '/customers-purchase/${widget.customerid}');
     print("\n\n$resp\n\n");
     var response = jsonDecode(resp);
     print("\n\n${response.toString()}\n\n");
@@ -31,7 +31,7 @@ class _DealerInfoScreenState extends State<DealerInfo> {
   }
   void fetchDetails() async {
     var resp = await HttpResponse.getResponse(
-        service: '/suppliers/${widget.supplierID}');
+        service: '/customers/${widget.customerid}');
     print("\n\n$resp\n\n");
     var response = jsonDecode(resp);
     print("\n\n${response.toString()}\n\n");
@@ -79,7 +79,7 @@ class _DealerInfoScreenState extends State<DealerInfo> {
                   Container(
                     alignment: Alignment.bottomLeft,
                     margin: EdgeInsets.only(left: 12.0, top: 12.0),
-                    child: Text(data['supplierName'],
+                    child: Text(data['customername'],
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 30.0,
@@ -104,7 +104,7 @@ class _DealerInfoScreenState extends State<DealerInfo> {
                               Container(
                                 alignment: Alignment.bottomLeft,
                                 child: Text(
-                                  "Supplier ID : " + '${data['supplierID']}',
+                                  "Customer ID : " + '${data['customerid']}',
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold),
@@ -188,7 +188,7 @@ class _DealerInfoScreenState extends State<DealerInfo> {
                           )),
                     ),
                     Text(
-                      'All Invoices of ${data['supplierName']}',
+                      'All Invoices of ${data['customername']}',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
@@ -202,7 +202,7 @@ class _DealerInfoScreenState extends State<DealerInfo> {
                           )),
                     ),
                   ]),
-                  (invoice.isNotEmpty)
+                  (invoice.length > 0)
                       ? ListView.builder(
                           shrinkWrap: true,
                           physics: new AlwaysScrollableScrollPhysics(),
@@ -225,11 +225,14 @@ class _DealerInfoScreenState extends State<DealerInfo> {
                                   onTap: () {
                                     Navigator.push(
                                         context,
-                                        CupertinoPageRoute(
+                                        MaterialPageRoute(
                                             builder: (context) =>
                                                 InvoiceDetails(
                                                   invoiceId: invoice[i]['invoiceNo'],
-                                                  supplierID: invoice[i]['supplierid']
+                                                    customerID: invoice[i]['customerid'],
+                                                  customername: data['customername'],
+                                                  customermobile: data['Mobile'],
+
                                                 )));
                                   },
                                   child: Padding(

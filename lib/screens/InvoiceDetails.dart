@@ -3,14 +3,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:namma_badavane/utils/HttpResponse.dart';
 import 'package:namma_badavane/utils/bottom_navigation.dart';
-
+import 'package:namma_badavane/widgets/dialogs.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class InvoiceDetails extends StatefulWidget {
   final String invoiceId;
-  final String supplierID;
+  final String customerID;
+  final String customermobile;
+  final String customername;
 
   // receive data from the FirstScreen as a parameter
-  InvoiceDetails({Key key, @required this.invoiceId, @required this.supplierID})
+  InvoiceDetails({Key key, @required this.invoiceId, @required this.customerID, this.customermobile, this.customername})
       : super(key: key);
 
   @override
@@ -20,28 +23,37 @@ class InvoiceDetails extends StatefulWidget {
 class _InvoiceDetailsState extends State<InvoiceDetails> {
   TextEditingController _amountcontroller = new TextEditingController();
   var invoiceData = {};
+  var deposit_amount;
+  double due = 0.0;
 
   void fetchparticularInvoice() async {
     var resp = await HttpResponse.getResponse(
         service:
-            '/suppliers-purchase/${widget.supplierID}/${widget.invoiceId}');
+            '/customers-purchase/${widget.customerID}/${widget.invoiceId}');
     print("\n\n$resp\n\n");
     var response = jsonDecode(resp);
     print("\n\n${response.toString()}\n\n");
     setState(() {
       invoiceData = response['data'][0];
     });
-    print(invoiceData);
+
+    var respon = await HttpResponse.getResponse(
+        service:
+            '/customers-deposite/${widget.customerID}/${widget.invoiceId}');
+    print("\n\n$respon\n\n");
+    var responsee = jsonDecode(respon);
+    print("\n\n${responsee.toString()}\n\n");
+    setState(() {
+      deposit_amount = responsee['total_deposite'];
+    });
+    due = double.parse(invoiceData['total']) - double.parse(deposit_amount);
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchparticularInvoice();
-    print(_amountcontroller.text.toString());
-    print(widget.supplierID);
-    print(widget.invoiceId);
+
   }
 
   @override
@@ -172,7 +184,9 @@ class _InvoiceDetailsState extends State<InvoiceDetails> {
                                 Container(
                                   alignment: Alignment.center,
                                   child: Text(
-                                    "₹ ${invoiceData['remain']}",
+                                    due == 0.0
+                                        ? "0.0"
+                                        : "₹ ${due.toStringAsFixed(2)}",
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold),
@@ -276,7 +290,7 @@ class _InvoiceDetailsState extends State<InvoiceDetails> {
                                 Container(
                                   alignment: Alignment.center,
                                   child: Text(
-                                    "₹ ${invoiceData['paid']}",
+                                    "₹ ${deposit_amount}",
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold),
@@ -352,63 +366,54 @@ class _InvoiceDetailsState extends State<InvoiceDetails> {
   }
 
   void submit() async {
-    _showMyDialog();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    // try {
-    //   Map data = {
-    //   "invoice_no" : widget.invoiceId,
-    //   "supplier_id" : widget.supplierID,
-    //   "paid_amt"  : _amountcontroller.text.toString()
-    //
-    // };
-    //   var resp = await HttpResponse.postResponse(
-    //       service: '/suppliers/purchases/pay', data: data);
-    //   print("\n\n$resp\n\n");
-    //   print(data);
-    //   var response = jsonDecode(resp);
-    //   print("\n\n${response.toString()}\n\n");
-    //   if (response['status'] == '200') {
-    //     showDialog(
-    //         context: context,
-    //         builder: (BuildContext context) {
-    //           return oneButtonDialog(
-    //               context: context,
-    //               title: "Payment Successfull",
-    //               content: response['message'],
-    //               actionTitle: "OK");
-    //         });
-    //
-    //
-    //      Navigator.push(
-    //         context,
-    //         CupertinoPageRoute(
-    //             builder: (context) =>
-    //                 BottomBarExample()));
-    //
-    //   } else {
-    //
-    //     showDialog(
-    //         context: context,
-    //         builder: (BuildContext context) {
-    //           return oneButtonDialog(
-    //               context: context,
-    //               title: "Error",
-    //               content: "Something went wrong",
-    //               actionTitle: "OK");
-    //         });
-    //   }
-    // } catch (e) {
-    //   print("Error : $e");
-    //   showDialog(
-    //       context: context,
-    //       builder: (BuildContext context) {
-    //         return oneButtonDialog(
-    //             context: context,
-    //             title: "Error",
-    //             content: "$e",
-    //             actionTitle: "OK");
-    //       });
-    // }
+
+
+    try {
+      Map data = {
+        "paid_amt": _amountcontroller.text.toString(),
+        "invoice_no": widget.invoiceId,
+        "customer_id": widget.customerID,
+        "employee_id": prefs.getString('empid'),
+        "customer_name": widget.customername,
+        "employee_name": prefs.getString('empname'),
+        "customer_contact": widget.customermobile,
+        "employee_contact": prefs.getString('empmobile'),
+      };
+      var resp = await HttpResponse.postResponse(
+          service: '/customers/purchases/pay', data: data);
+      print("\n\n$resp\n\n");
+      print(data);
+      var response = jsonDecode(resp);
+      print("\n\n${response.toString()}\n\n");
+      if (response['status'] == '200') {
+        _showMyDialog();
+      }
+      else {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return oneButtonDialog(
+                  context: context,
+                  title: "Error",
+                  content: "Something went wrong",
+                  actionTitle: "OK");
+            });
+      }
+    }
+    catch (e) {
+      print("Error : $e");
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return oneButtonDialog(
+                context: context,
+                title: "Error",
+                content: "$e",
+                actionTitle: "OK");
+          });
+    }
   }
 
   Future<void> _showMyDialog() async {
@@ -419,15 +424,17 @@ class _InvoiceDetailsState extends State<InvoiceDetails> {
         return AlertDialog(
           title: const Text('Payment Successfull !'),
           content: SingleChildScrollView(
-            child: Text("Payment is ${_amountcontroller.text.toString()} successfull, customer will get a message after apropval"),
+            child: Text(
+                "Payment is ${_amountcontroller.text.toString()} successfull, customer will get a message after apropval"),
           ),
           actions: <Widget>[
             TextButton(
               child: const Text('Go to Home Page'),
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                    BottomBarExample()), (Route<dynamic> route) => false);
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => BottomBarExample()),
+                    (Route<dynamic> route) => false);
               },
             ),
           ],

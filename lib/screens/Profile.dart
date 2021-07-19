@@ -32,6 +32,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       contact = response['data'][0]['mobile'].toString();
       profile = response['data'][0]['photo'].toString();
     });
+
+    print('shared preference coming data');
+    print(prefs.getString('empid'));
+    print(prefs.getString('empmobile'));
+    print(prefs.getString('empname'));
+
   }
 
   @override

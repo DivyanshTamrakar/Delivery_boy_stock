@@ -1,26 +1,26 @@
 import 'package:flutter/cupertino.dart';
 
 class Customer {
-  final String supplierID;
-  final String supplierName;
+  final int customerid;
+  final String customername;
   final String City;
 
   const Customer({
-    @required this.supplierID,
-    @required this.supplierName,
-    @required this.City,
+    @required this.customerid,
+    @required this.customername,
+     this.City,
   });
 
   factory Customer.fromJson(Map<dynamic, dynamic> json) => Customer(
-    supplierID: json['supplierID'],
-    supplierName: json['supplierName'],
+    customerid: json['customerid'],
+    customername: json['customername'],
     City: json['City'],
 
   );
 
   Map<String, dynamic> toJson() => {
-    'supplierId': supplierID,
-    'supplierName': supplierName,
+    'supplierId': customerid,
+    'supplierName': customername,
     'City': City,
 
   };

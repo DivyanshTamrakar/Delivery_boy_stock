@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:namma_badavane/api/books_api.dart';
 import 'package:namma_badavane/model/book.dart';
-import 'package:namma_badavane/screens/DealerInfo.dart';
-import 'package:namma_badavane/search_widgte/search_widget.dart';
+import 'package:namma_badavane/screens/CustomerInfo.dart';
+import 'package:namma_badavane/search_widget/search_widget.dart';
+import 'package:namma_badavane/utils/HttpResponse.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -15,10 +18,30 @@ class _HomeScreenState extends State<HomeScreen> {
   String query = '';
   Timer debouncer;
 
+
+  void fetchAgentDetail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString('userID');
+    var resp = await HttpResponse.getResponse(
+      service: '/users/$id',
+    );
+    print("\n\n$resp\n\n");
+
+    var response = jsonDecode(resp);
+    print("\n\n${response.toString()}\n\n");
+
+
+    setState(() {
+      prefs.setString('empid', response['data'][0]['empid'].toString());
+      prefs.setString('empname', response['data'][0]['empname'].toString());
+      prefs.setString('empmobile', response['data'][0]['mobile'].toString());
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-
+   fetchAgentDetail();
     init();
   }
 
@@ -97,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      DealerInfo(supplierID: customer.supplierID)));
+                      DealerInfo(customerid: customer.customerid)));
         },
         child: Container(
           padding: EdgeInsets.only(left: 8.0, right: 8.0),
@@ -108,10 +131,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(4.0)),
             child: ListTile(
               title: Text(
-                customer.supplierName,
+                customer.customername,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              subtitle: Text(customer.City),
+              subtitle: customer.City == null ?Text("Jabalpur") :Text(customer.City),
             ),
           ),
         ),
