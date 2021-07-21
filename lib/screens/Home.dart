@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:namma_badavane/api/AllCutomerApi.dart';
 import 'package:namma_badavane/model/AllCustomerModel.dart';
+import 'package:namma_badavane/screens/AgentCollections.dart';
 import 'package:namma_badavane/screens/CustomerInfo.dart';
 import 'package:namma_badavane/search_widget/search_widget.dart';
 import 'package:namma_badavane/utils/HttpResponse.dart';
@@ -18,7 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
   String query = '';
   Timer debouncer;
 
-
   void fetchAgentDetail() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var id = prefs.getString('userID');
@@ -30,7 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
     var response = jsonDecode(resp);
     print("\n\n${response.toString()}\n\n");
 
-
     setState(() {
       prefs.setString('empid', response['data'][0]['empid'].toString());
       prefs.setString('empname', response['data'][0]['empname'].toString());
@@ -41,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-   fetchAgentDetail();
+    fetchAgentDetail();
     init();
   }
 
@@ -76,12 +75,27 @@ class _HomeScreenState extends State<HomeScreen> {
             "All Customers",
             style: TextStyle(color: Colors.white, letterSpacing: 1.0),
           ),
-         centerTitle: false,
+          centerTitle: false,
+          actions: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AgentCollection()));
+                },
+                  child: Icon(
+                Icons.account_balance_wallet_outlined,
+                color: Colors.white,
+              )),
+            )
+          ],
         ),
         body: Column(
           children: <Widget>[
             buildSearch(),
-
             Expanded(
               child: customer.length > 0
                   ? ListView.builder(
@@ -134,7 +148,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 customer.customername,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              subtitle: customer.City == null ?Text("Jabalpur") :Text(customer.City),
+              subtitle: customer.City == null
+                  ? Text("Jabalpur")
+                  : Text(customer.City),
             ),
           ),
         ),

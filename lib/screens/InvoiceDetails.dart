@@ -23,7 +23,7 @@ class InvoiceDetails extends StatefulWidget {
 class _InvoiceDetailsState extends State<InvoiceDetails> {
   TextEditingController _amountcontroller = new TextEditingController();
   var invoiceData = {};
-  var deposit_amount;
+  var depositAmount;
   double due = 0.0;
 
   void fetchparticularInvoice() async {
@@ -44,9 +44,9 @@ class _InvoiceDetailsState extends State<InvoiceDetails> {
     var responsee = jsonDecode(respon);
     print("\n\n${responsee.toString()}\n\n");
     setState(() {
-      deposit_amount = responsee['total_deposite'];
+      depositAmount = responsee['total_deposite'];
     });
-    due = double.parse(invoiceData['total']) - double.parse(deposit_amount);
+    due = double.parse(invoiceData['total']) - double.parse(depositAmount);
   }
 
   @override
@@ -290,7 +290,7 @@ class _InvoiceDetailsState extends State<InvoiceDetails> {
                                 Container(
                                   alignment: Alignment.center,
                                   child: Text(
-                                    "₹ ${deposit_amount}",
+                                    "₹ $depositAmount",
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold),
@@ -308,7 +308,7 @@ class _InvoiceDetailsState extends State<InvoiceDetails> {
               SizedBox(
                 height: 30.0,
               ),
-              Row(
+              due == 0.0 ?Container():Row(
                 children: [
                   Container(
                     margin: EdgeInsets.only(left: 8.0),
@@ -338,7 +338,7 @@ class _InvoiceDetailsState extends State<InvoiceDetails> {
                   SizedBox(
                     width: 10.0,
                   ),
-                  Container(
+                 Container(
                     height: 48.0,
                     child: ElevatedButton(
                         child: Text("Submit".toUpperCase(),
